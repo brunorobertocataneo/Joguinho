@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nossos Universos — Pixel Adventure Deluxe</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap');
+:root{--ink:#263548;--cream:#fffaed;--paper:#fff7df;--blue:#225675;--coral:#ff806c;--gold:#ffd170;--shadow:0 18px 45px #183c5c35}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Nunito,system-ui,sans-serif;background:#7ad0dd;color:var(--ink)}button{font:inherit;cursor:pointer}button:focus-visible{outline:4px solid #f8d16a;outline-offset:3px}
+#game{display:block;width:100vw;height:100vh;touch-action:none}
+#game{image-rendering:pixelated}#grain{pointer-events:none;position:fixed;inset:0;opacity:.1;z-index:1;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.26'/%3E%3C/svg%3E")}
+#hud{position:fixed;z-index:5;left:24px;right:24px;top:18px;display:flex;justify-content:space-between;gap:15px;align-items:flex-start;pointer-events:none}
+.brand{pointer-events:auto;display:flex;align-items:center;gap:12px;border:3px solid #fff9de;border-radius:19px;background:#fff8e8f5;box-shadow:0 7px 0 #295d7450,0 13px 28px #173f5747;padding:10px 18px}
+.brand .mark{font-size:32px;filter:drop-shadow(0 2px #bb9259)}.brand b{font:800 24px/1 'Baloo 2';display:block;color:#2a6572}.brand small{font-weight:900;font-size:10px;letter-spacing:2.1px;color:#9c8370}
+.topright{display:flex;gap:11px;pointer-events:auto;align-items:center}.pill{display:flex;align-items:center;gap:8px;background:#fff9e9f1;border:3px solid white;box-shadow:0 6px #20556d53;border-radius:16px;padding:11px 16px;font-weight:900;font-size:14px}.pill span{color:#d0804f}.round{width:49px;height:49px;border:3px solid white;border-radius:15px;background:#fff7e3f2;box-shadow:0 6px #20556d53;font-size:21px}
+#bottom{position:fixed;bottom:23px;left:50%;transform:translateX(-50%);z-index:5;min-width:min(635px,92vw);max-width:92vw;background:#fff9eaf3;border:4px solid white;border-radius:25px;box-shadow:0 9px 0 #23557065,0 18px 30px #113e534d;text-align:center;padding:13px 22px;pointer-events:none}
+#bottom b{font:800 23px 'Baloo 2';color:#306b67}#bottom p{margin:0;font-size:13px;font-weight:800;color:#8c8176}.islandBtns{display:flex;justify-content:center;gap:10px;margin-top:8px;pointer-events:auto;flex-wrap:wrap}
+.worldBtn{border:2px solid #ebd8b8;background:#fffdf4;color:#796e67;border-radius:100px;padding:6px 14px;font-size:12px;font-weight:900;box-shadow:0 3px #d7c19d}.worldBtn.active{background:#4aa4a5;color:white;border-color:#278486}.worldBtn:disabled{opacity:.52;cursor:not-allowed}
+#screenfade{pointer-events:none;position:fixed;inset:0;background:#182c45;z-index:18;opacity:0;transition:opacity .42s}
+#modalLayer{position:fixed;inset:0;background:#173c55a1;backdrop-filter:blur(6px);z-index:20;display:grid;place-items:center;padding:18px}
+#modalLayer.hidden{display:none}.modal{width:min(620px,100%);max-height:94vh;overflow:auto;border-radius:28px;border:6px solid #fff7df;outline:4px solid #b98b5a;box-shadow:0 28px 70px #08243a9c;background:linear-gradient(155deg,#fffaf0,#ffefd8);padding:34px 40px;text-align:center;position:relative}
+.modal:before,.modal:after{content:"✦";position:absolute;color:#efb85d;font-size:40px;top:12px}.modal:before{left:17px}.modal:after{right:17px}
+.modal .eyebrow{color:#cb8560;letter-spacing:3px;font-size:11px;font-weight:900}.modal h1{font:800 clamp(38px,6vw,64px)/.98 'Baloo 2';letter-spacing:-2px;margin:7px 0 14px;color:#327b83;text-shadow:2px 3px #d8ebd8}.modal p{font-size:15px;line-height:1.75;color:#75685c;font-weight:700}.heroart{font-size:61px;filter:drop-shadow(0 6px #e6bd8f);margin:12px 0}
+.primary{border:3px solid #fff3d3;border-radius:15px;background:linear-gradient(#ff9e72,#e96d6c);color:white;padding:13px 29px;font:800 20px 'Baloo 2';box-shadow:0 7px #bc5358,0 12px 16px #6f5d4340;transition:transform .15s}.primary:hover{transform:translateY(2px);box-shadow:0 5px #bc5358}.secondary{border:3px solid #dfd3ae;border-radius:14px;background:#fffdf3;color:#6b6b5f;padding:10px 18px;font-weight:900;margin:10px}
+#toast{position:fixed;top:106px;left:50%;transform:translateX(-50%);z-index:15;pointer-events:none;background:#fff8e9;border:3px solid white;border-radius:14px;color:#427777;font-weight:900;box-shadow:0 6px 0 #2b6a7770;padding:11px 19px;opacity:0;transition:opacity .2s;text-align:center;max-width:90vw}#toast.visible{opacity:1}
+#stageui{display:none;position:fixed;z-index:8;top:91px;left:22px;background:#fff9eae9;border:3px solid white;padding:9px 15px;border-radius:13px;font-weight:900;box-shadow:0 5px #22536c54}#stageui b{color:#2b787a}
+#back{display:none;position:fixed;z-index:9;bottom:26px;left:24px;background:#fff9ed;border:3px solid #fff;border-radius:14px;padding:12px 18px;font-weight:900;color:#376976;box-shadow:0 5px #24527066}
+#controls{display:none;position:fixed;bottom:20px;right:20px;z-index:9;gap:8px}.ctl{width:55px;height:55px;background:#fffbe7c9;border:3px solid white;border-radius:17px;font-size:21px;color:#427c83;touch-action:none;box-shadow:0 5px #28647977}.ctl.jump{background:#f7a274;color:white}
+#stagehint{display:none;position:fixed;right:23px;top:92px;color:#fffaf0;font-weight:900;font-size:12px;text-shadow:0 2px 5px #13384e;z-index:7;text-align:right}
+@media(max-width:780px){#hud{top:9px;left:9px;right:9px}.brand{padding:7px 10px}.brand b{font-size:16px}.brand small{font-size:8px;letter-spacing:1px}.brand .mark{font-size:23px}.pill{padding:7px 9px;font-size:11px}.round{width:39px;height:39px}#bottom{bottom:8px;padding:7px 8px;border-radius:18px}#bottom b{font-size:17px}#bottom p{font-size:10px}.worldBtn{font-size:10px;padding:4px 8px}.modal{padding:24px 18px}#stagehint{display:none!important}#controls{display:flex!important}#back{bottom:88px;left:9px;padding:7px 11px;font-size:12px}#stageui{top:76px;left:9px;font-size:12px}}
+</style></head><body>
+<canvas id="game"></canvas><div id="grain"></div>
+<div id="hud"><div class="brand"><span class="mark">🧭</span><div><b>Nossos Universos</b><small>PIXEL ADVENTURE · DELUXE</small></div></div><div class="topright"><div class="pill">✨ <span id="stars">0 / 9</span></div><button class="round" id="sound" title="Ativar/desativar som">🔊</button><button class="round" id="info" title="Como jogar">❔</button></div></div>
+<div id="stageui">⭐ <b id="levelstars">0 / 3</b> &nbsp; 💗 <b id="hearts">♥♥♥</b> &nbsp; <span id="lvname"></span></div>
+<div id="stagehint">← → ou A D para andar<br>Espaço / ↑ para pular · pegue 3 estrelas ⭐</div>
+<button id="back">← Voltar ao mapa</button>
+<div id="controls"><button class="ctl" data-key="left">◀</button><button class="ctl" data-key="right">▶</button><button class="ctl jump" data-key="jump">⬆</button></div>
+<div id="bottom"><b id="bottomTitle">O arquipélago dos sonhos</b><p id="bottomText">Escolha uma ilha para começar sua aventura</p><div class="islandBtns" id="islandBtns"></div></div>
+<div id="toast"></div><div id="screenfade"></div>
+<div id="modalLayer"><div class="modal" id="modal"><div class="eyebrow">✦ UMA HISTÓRIA FEITA COM CARINHO ✦</div><div class="heroart">🏝️ 💌 ✨</div><h1>Nossos Universos</h1><p>Três ilhas, três aventuras e um segredo esperando no fim do caminho. Navegue pelos mundos inspirados em <b>One Piece</b>, <b>Fullmetal Alchemist</b> e <b>Naruto</b>. Colete estrelas e desbloqueie a próxima ilha!</p><button class="primary" id="begin">Começar a viagem →</button></div></div>
+<script>
+(()=>{'use strict';
+const c=document.querySelector('#game'),g=c.getContext('2d'),$=s=>document.querySelector(s),W=1280,H=720,TAU=Math.PI*2;
+let vw=innerWidth,vh=innerHeight,DPR=Math.min(devicePixelRatio||1,2),t=0,last=0,scene='map',current=0,transition=false,sound=true,audio,toastTimer;
+let save={unlocked:0,completed:[false,false,false],stars:[0,0,0]};try{const old=JSON.parse(localStorage.getItem('nossos_universos_adventure_v2'));if(old&&Array.isArray(old.completed))save={...save,...old}}catch(e){}
+const worlds=[
+ {name:'Mar dos Piratas',series:'One Piece',theme:'pirate',label:'Ilha dos Piratas',color:'#59beaf',x:235,y:378,description:'Embarque numa aventura pelos mares! Encontre três estrelas e alcance o navio.',emoji:'🏴‍☠️'},
+ {name:'Vale da Alquimia',series:'Fullmetal Alchemist',theme:'alchemy',label:'Ilha da Alquimia',color:'#edb66d',x:628,y:293,description:'Explore antigas ruínas e descubra o brilho da transmutação.',emoji:'⚗️'},
+ {name:'Vila das Folhas',series:'Naruto',theme:'ninja',label:'Ilha Ninja',color:'#e78b8f',x:1022,y:410,description:'Corra pelos telhados e atravesse as florestas até a grande vila.',emoji:'🍃'}
+];
+let level=null,buttons=[];
+const art={};for(const theme of ['pirate','alchemy','ninja'])for(const kind of ['hero','enemy','tiles','bg']){const im=new Image();im.src='assets/'+kind+'_'+theme+'.png';art[kind+'_'+theme]=im;}
+function picture(name){const a=art[name];return a&&a.complete&&a.naturalWidth?a:null}
+
+function persist(){localStorage.setItem('nossos_universos_adventure_v2',JSON.stringify(save))}
+function resize(){vw=innerWidth;vh=innerHeight;DPR=Math.min(devicePixelRatio||1,2);c.width=Math.floor(vw*DPR);c.height=Math.floor(vh*DPR);g.setTransform(DPR,0,0,DPR,0,0)}addEventListener('resize',resize);resize();
+function rand(n){let x=Math.sin(n*127.1+3.93)*43758.5453;return x-Math.floor(x)}
+function fill(col){g.fillStyle=col}function stroke(col,w=1){g.strokeStyle=col;g.lineWidth=w}function rect(x,y,w,h,col){fill(col);g.fillRect(x,y,w,h)}
+function rr(x,y,w,h,r,col){fill(col);g.beginPath();g.roundRect(x,y,w,h,r);g.fill()}
+function ellipse(x,y,rx,ry,col){fill(col);g.beginPath();g.ellipse(x,y,rx,ry,0,0,TAU);g.fill()}
+function line(a,b,x,y,col,w=1){stroke(col,w);g.beginPath();g.moveTo(a,b);g.lineTo(x,y);g.stroke()}
+function poly(points,col){fill(col);g.beginPath();points.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.closePath();g.fill()}
+function text(s,x,y,size=20,col='#fff',font='Baloo 2',align='center'){fill(col);g.font='800 '+size+'px "'+font+'"';g.textAlign=align;g.textBaseline='middle';g.fillText(s,x,y)}
+function star(x,y,r=10,color='#fff4a3',turn=0){let p=[];for(let i=0;i<10;i++){let a=i*Math.PI/5-Math.PI/2+turn;let rad=i%2?r*.45:r;p.push([x+Math.cos(a)*rad,y+Math.sin(a)*rad])}poly(p,color)}
+function cloud(x,y,s=1,alpha=1){g.save();g.globalAlpha=alpha;ellipse(x,y,58*s,19*s,'#ffffff');ellipse(x-25*s,y-10*s,28*s,21*s,'#fff');ellipse(x+10*s,y-18*s,38*s,28*s,'#fff');ellipse(x+44*s,y-6*s,26*s,20*s,'#fff');ellipse(x,y+8*s,56*s,11*s,'#e6f8f0');g.restore()}
+function glow(x,y,r,col){const q=g.createRadialGradient(x,y,0,x,y,r);q.addColorStop(0,col);q.addColorStop(1,'#ffffff00');ellipse(x,y,r,r,q)}
+function sparkle(x,y,a=1){g.save();g.globalAlpha=a;star(x,y,4,'#fff7bb',t*.2);g.restore()}
+function tree(x,y,s=1,kind='broad'){g.save();g.translate(x,y);g.scale(s,s);ellipse(5,9,32,11,'#264b3b43');rr(-6,-45,13,50,3,'#755741');rr(-2,-40,4,38,2,'#ae8155');if(kind==='pine'){poly([[-35,-23],[0,-100],[33,-23]],'#2c7058');poly([[-31,-44],[0,-115],[31,-44]],'#388a65');poly([[-25,-69],[0,-127],[24,-69]],'#46a273')}else{ellipse(0,-73,43,37,'#246956');ellipse(-22,-61,30,29,'#34876b');ellipse(23,-68,34,33,'#469d71');ellipse(0,-91,33,31,'#57ad7c');ellipse(-14,-95,16,11,'#8aca91')}g.restore()}
+function flower(x,y,col='#ffdd84',s=1){line(x,y,x,y-13*s,'#2f906e',2*s);for(let i=0;i<5;i++){let a=i*TAU/5;ellipse(x+Math.cos(a)*5*s,y-14*s+Math.sin(a)*5*s,4*s,4*s,col)}ellipse(x,y-14*s,3*s,3*s,'#ffe8ac')}
+function mountain(x,y,s=1,col='#74a59a'){poly([[x-95*s,y],[x,y-135*s],[x+103*s,y]],col);poly([[x-30*s,y-94*s],[x,y-135*s],[x+38*s,y-86*s],[x+17*s,y-92*s],[x-4*s,y-79*s]],'#fff0df')}
+function boat(x,y,s=1){g.save();g.translate(x,y);g.scale(s,s);poly([[-61,7],[59,7],[44,28],[-45,28]],'#9a6344');line(0,-91,0,8,'#7b563d',6);poly([[3,-87],[4,2],[43,-8]],'#fff3d7');poly([[-4,-75],[-5,0],[-34,-6]],'#f9d7a6');rect(-31,2,62,6,'#bf8051');g.restore()}
+function island(x,y,s,theme,index){g.save();g.translate(x,y+Math.sin(t*.7+index)*4);g.scale(s,s);
+ellipse(9,66,164,51,'#0e729078');ellipse(0,54,171,54,'#e2b86a');ellipse(0,41,167,58,'#ffe0a0');
+ellipse(-1,27,160,57,theme==='pirate'?'#77bc78':theme==='alchemy'?'#b2be83':'#7eb98f');
+ellipse(0,13,146,55,theme==='pirate'?'#8ed68f':theme==='alchemy'?'#c9ca8f':'#9dd6a8');
+for(let i=0;i<10;i++){let a=i*1.4;let xx=Math.cos(a)*126,yy=17+Math.sin(a)*34;ellipse(xx,yy,5,3,'#fff2b4')}
+if(theme==='pirate'){tree(-91,8,.74);tree(-128,31,.55);tree(113,24,.53);boat(-3,0,.64);rect(-5,-94,10,37,'#79533e');poly([[-1,-94],[39,-81],[-1,-67]],'#353b5d');flower(55,17,'#ff8f8a')}
+if(theme==='alchemy'){mountain(-60,17,.6,'#84948d');tree(-122,15,.52,'pine');tree(115,26,.56,'pine');rr(-52,-20,108,48,8,'#bd9b80');rect(-40,-55,83,47,'#d8c6a8');poly([[-53,-53],[0,-98],[59,-53]],'#8a746b');rect(-8,-33,23,61,'#715c54');for(let i=0;i<4;i++)rect(-37+i*24,-45,11,13,'#8ed1d7');glow(10,-92,42,'#a4edc875')}
+if(theme==='ninja'){tree(-119,6,.52);tree(121,21,.65);for(let k=-1;k<=1;k++){rect(k*43-15,-9-(k===0?36:0),39,49+(k===0?36:0),'#d8ac85');poly([[k*43-23,-9-(k===0?36:0)],[k*43+4,-36-(k===0?36:0)],[k*43+32,-9-(k===0?36:0)]],'#b95458');rect(k*43-2,14-(k===0?36:0),13,26,'#735651')}flower(-62,17,'#f9a9be');flower(83,24,'#ffd5e4')}
+for(let i=0;i<14;i++){let xx=(rand(i*13+index*83)-.5)*280,yy=22+rand(i*8+index*49)*30;ellipse(xx,yy,3,2,i%2?'#aedf93':'#fff2b0')}
+g.restore()}
+function ribbon(x,y,label,sub,selected=false){g.save();g.shadowColor='#235c66a6';g.shadowBlur=20;g.shadowOffsetY=8;rr(x-102,y-19,204,55,16,selected?'#fffdf0':'#fff7e4');g.restore();rr(x-95,y-14,190,45,12,selected?'#e7ffed':'#fff8e7');text(label,x,y+1,19,'#3c6771');text(sub,x,y+22,11,'#b18b69','Nunito')}
+function drawMap(){const ocean=g.createLinearGradient(0,0,0,H);ocean.addColorStop(0,'#9ce3e0');ocean.addColorStop(.45,'#77d5d9');ocean.addColorStop(1,'#4eacc6');rect(0,0,W,H,ocean);
+for(let j=0;j<25;j++){let xx=(j*217+Math.sin(t*.24+j)*22)%1450-90,yy=122+(j*79)%560;g.save();g.globalAlpha=.22;ellipse(xx,yy,56+(j%4)*15,4,'#e9fcf8');g.restore()}
+for(let j=0;j<19;j++){let x=(j*181+67)%1280,y=(j*93+36)%690;g.save();g.globalAlpha=.35+Math.sin(t*2+j)*.16;sparkle(x,y,.75);g.restore()}
+cloud((90+t*9)%1500-120,149,.72,.7);cloud((600+t*5)%1500-110,120,.9,.6);cloud((1090+t*7)%1500-120,182,.64,.5);
+line(220,391,613,318,'#fcf8d8ad',5);line(613,318,1002,427,'#fcf8d8ad',5);
+for(let j=0;j<3;j++)for(let k=0;k<9;k++){let a=worlds[j].x,b=worlds[j].y;if(j>0)continue;let f=(k/9+t*.025)%1;let x=j===0?220+(613-220)*f:613+(1002-613)*f,y=j===0?391+(318-391)*f:318+(427-318)*f;ellipse(x,y,3,3,'#fff5d6')}
+for(let j=0;j<2;j++){const a=worlds[j],b=worlds[j+1];for(let k=0;k<14;k++){let q=k/14,x=a.x+(b.x-a.x)*q,y=a.y+(b.y-a.y)*q-28*Math.sin(q*Math.PI);ellipse(x,y,4,4,'#fff8df')}}
+boat(516,570,.7);boat(906,595,.45);
+worlds.forEach((w,i)=>{const locked=i>save.unlocked;island(w.x,w.y,i===1?1.04:1.13,w.theme,i);
+if(locked){ellipse(w.x,w.y-88,41,41,'#203c57c4');text('🔒',w.x,w.y-88,29)}else{glow(w.x,w.y-118,58,i===0?'#fff1a455':i===1?'#a9e9f077':'#ffbbd177');ellipse(w.x,w.y-126+Math.sin(t*2+i)*4,30,30,i===0?'#fff0b8':i===1?'#ffddaa':'#ffe1d2');text(save.completed[i]?'✓':String(i+1),w.x,w.y-128+Math.sin(t*2+i)*4,30,save.completed[i]?'#368e75':'#a16f4c')}
+ribbon(w.x,w.y+122,w.label,locked?'🔒 Conclua a ilha anterior':save.completed[i]?'✓ Aventura concluída · rejogar':'✦ Clique para explorar',i===current);
+});
+text('✦  O ARQUIPÉLAGO DOS SONHOS  ✦',640,164,25,'#fef9e9');text('NAVEGUE PELOS TRÊS UNIVERSOS',640,193,12,'#fff7ea','Nunito');
+}
+function initLevel(i){current=i;scene='level';const theme=worlds[i].theme;
+const ground=[
+ [{x:0,y:565,w:540,h:155},{x:610,y:565,w:400,h:155},{x:1090,y:565,w:520,h:155},{x:1695,y:565,w:515,h:155},{x:2300,y:565,w:540,h:155}],
+ [{x:0,y:565,w:460,h:155},{x:545,y:565,w:455,h:155},{x:1090,y:565,w:430,h:155},{x:1620,y:565,w:510,h:155},{x:2230,y:565,w:610,h:155}],
+ [{x:0,y:565,w:590,h:155},{x:710,y:565,w:470,h:155},{x:1270,y:565,w:490,h:155},{x:1840,y:565,w:415,h:155},{x:2350,y:565,w:490,h:155}]
+][i];
+const float=[
+ [{x:340,y:445,w:135,h:24},{x:690,y:430,w:118,h:24},{x:1280,y:438,w:160,h:24},{x:1830,y:412,w:148,h:24},{x:2140,y:465,w:125,h:24}],
+ [{x:230,y:432,w:140,h:26},{x:600,y:387,w:140,h:26},{x:950,y:459,w:145,h:26},{x:1360,y:405,w:135,h:26},{x:1910,y:420,w:140,h:26},{x:2130,y:370,w:140,h:26}],
+ [{x:410,y:430,w:130,h:24},{x:660,y:370,w:140,h:24},{x:1040,y:435,w:130,h:24},{x:1390,y:375,w:150,h:24},{x:1780,y:410,w:130,h:24},{x:2190,y:362,w:155,h:24}]
+][i];
+const stars=[
+ [{x:395,y:390},{x:1330,y:385},{x:2185,y:410}],
+ [{x:665,y:330},{x:1430,y:352},{x:2200,y:317}],
+ [{x:730,y:315},{x:1465,y:322},{x:2240,y:310}]
+][i];
+const enemies=[
+ [{x:750,base:538,speed:48,min:650,max:950},{x:1480,base:538,speed:54,min:1150,max:1570},{x:1900,base:538,speed:46,min:1710,max:2110}],
+ [{x:800,base:538,speed:43,min:580,max:955},{x:1280,base:538,speed:57,min:1130,max:1470},{x:1810,base:538,speed:47,min:1660,max:2040}],
+ [{x:880,base:538,speed:88,min:745,max:1150},{x:1600,base:538,speed:95,min:1300,max:1700},{x:2050,base:538,speed:90,min:1880,max:2200}]
+][i];
+level={i,theme,platforms:ground.concat(float),orb:stars,monsters:enemies,player:{x:75,y:470,vx:0,vy:0,w:31,h:52,ground:false,invuln:0,jumps:0,jumpHeld:false},cam:0,lives:3,taken:[],goal:2710,done:false,particles:[],step:0};
+$('#stageui').style.display='block';$('#stagehint').style.display='block';$('#back').style.display='block';$('#bottom').style.display='none';updateLevelHud();toast(worlds[i].description+(i===2?' Use pulo duplo!':i===1?' Seus pulos são mais altos!':''));syncButtons()}
+function updateLevelHud(){$('#lvname').textContent=worlds[current].series;$('#levelstars').textContent=level.taken.length+' / 3';$('#hearts').textContent='♥'.repeat(level.lives)+'♡'.repeat(3-level.lives)}
+function backMap(){scene='map';level=null;$('#stageui').style.display='none';$('#stagehint').style.display='none';$('#back').style.display='none';$('#bottom').style.display='block';syncButtons()}
+function toast(s){$('#toast').textContent=s;$('#toast').classList.add('visible');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').classList.remove('visible'),2800)}
+function openModal(content){$('#modal').innerHTML=content;$('#modalLayer').classList.remove('hidden')}
+function closeModal(){$('#modalLayer').classList.add('hidden')}
+function choose(i){if(scene!=='map')return;if(i>save.unlocked){toast('🔒 Complete a ilha anterior primeiro!');return}current=i;syncButtons();openModal('<div class="eyebrow">✦ CAPÍTULO '+(i+1)+' DE 3 ✦</div><div class="heroart">'+worlds[i].emoji+'</div><h1>'+worlds[i].name+'</h1><p><b>'+worlds[i].series+'</b><br>'+worlds[i].description+'<br><br>Use ← → para se mover, Espaço para pular. Colete as <b>3 estrelas</b> e atravesse o portal ao final.</p><button class="primary" id="play">Entrar na ilha →</button><button class="secondary" id="cancel">Voltar ao mapa</button>');$('#play').onclick=()=>{closeModal();initLevel(i)};$('#cancel').onclick=closeModal}
+function syncButtons(){const el=$('#islandBtns');el.innerHTML='';worlds.forEach((w,i)=>{const b=document.createElement('button');b.className='worldBtn '+(current===i?'active':'');b.textContent=(i>save.unlocked?'🔒':save.completed[i]?'✓':i===0?'🏝️':'✨')+' '+w.series;b.disabled=i>save.unlocked;b.onclick=()=>choose(i);el.appendChild(b)});$('#stars').textContent=save.stars.reduce((a,b)=>a+b,0)+' / 9'}
+function finish(){if(level.done)return;level.done=true;const i=level.i;save.stars[i]=Math.max(save.stars[i],level.taken.length);save.completed[i]=true;save.unlocked=Math.max(save.unlocked,Math.min(2,i+1));persist();syncButtons();const final=i===2;
+openModal('<div class="eyebrow">✦ AVENTURA CONCLUÍDA ✦</div><div class="heroart">'+(final?'💗🌟💌':'🎉⭐🏝️')+'</div><h1>'+(final?'O nosso grande final!':'Ilha conquistada!')+'</h1><p>'+(final?'De um universo ao outro, a melhor parte da aventura sempre foi ter você comigo. Obrigado por fazer parte dessa história. ♡':'Você encontrou as estrelas e desbloqueou a próxima ilha. Nossa jornada continua!')+'</p><button class="primary" id="done">'+(final?'Rever o arquipélago':'Explorar próxima ilha →')+'</button>');$('#done').onclick=()=>{closeModal();backMap();if(!final)choose(i+1);else toast('💗 Obrigado por viver esta aventura!')}}
+function lose(){level.lives--;updateLevelHud();if(level.lives<=0){openModal('<div class="eyebrow">✦ TENTE OUTRA VEZ ✦</div><div class="heroart">💫🌷</div><h1>Você consegue!</h1><p>Toda grande aventura tem obstáculos. As estrelas estão esperando por você!</p><button class="primary" id="retry">Tentar novamente</button><button class="secondary" id="map">Voltar ao mapa</button>');$('#retry').onclick=()=>{closeModal();initLevel(current)};$('#map').onclick=()=>{closeModal();backMap()}}else{level.player.x=Math.max(70,level.player.x-175);level.player.y=410;level.player.vx=0;level.player.vy=0;level.player.invuln=1.5;toast('💗 Cuidado! Mais '+level.lives+' tentativas.')}}
+const keys={left:false,right:false,jump:false},press=(k,v)=>{keys[k]=v};addEventListener('keydown',e=>{if(['ArrowRight','ArrowLeft','ArrowUp','Space','KeyA','KeyD','KeyW'].includes(e.code))e.preventDefault();if(['ArrowRight','KeyD'].includes(e.code))keys.right=true;if(['ArrowLeft','KeyA'].includes(e.code))keys.left=true;if(['ArrowUp','Space','KeyW'].includes(e.code))keys.jump=true;if(e.code==='Escape'&&scene==='level'&&$('#modalLayer').classList.contains('hidden'))backMap()});
+addEventListener('keyup',e=>{if(['ArrowRight','KeyD'].includes(e.code))keys.right=false;if(['ArrowLeft','KeyA'].includes(e.code))keys.left=false;if(['ArrowUp','Space','KeyW'].includes(e.code))keys.jump=false});addEventListener('blur',()=>{keys.left=keys.right=keys.jump=false});
+document.querySelectorAll('.ctl').forEach(b=>{const key=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);press(key,true)});b.addEventListener('pointerup',()=>press(key,false));b.addEventListener('pointercancel',()=>press(key,false))});
+$('#back').onclick=backMap;$('#info').onclick=()=>{openModal('<div class="eyebrow">✦ GUIA DO AVENTUREIRO ✦</div><div class="heroart">🧭✨</div><h1>Como jogar</h1><p>No mapa, clique em uma ilha disponível. Em cada fase, use <b>A/D ou ←/→</b> para andar e <b>Espaço, W ou ↑</b> para pular. Colete as <b>3 estrelas</b>, evite os obstáculos e chegue ao portal. Concluir um capítulo libera o próximo. Seu progresso é salvo automaticamente.</p><button class="primary" id="ok">Entendi!</button>');$('#modal').querySelector('#ok').onclick=closeModal;};
+$('#sound').onclick=()=>{sound=!sound;$('#sound').textContent=sound?'🔊':'🔇';toast(sound?'Som ativado':'Som desativado')};
+function playTone(freq=650){if(!sound)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();const o=audio.createOscillator(),gain=audio.createGain();o.type='sine';o.frequency.setValueAtTime(freq,audio.currentTime);o.frequency.exponentialRampToValueAtTime(freq*1.4,audio.currentTime+.09);gain.gain.setValueAtTime(.05,audio.currentTime);gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+.22);o.connect(gain);gain.connect(audio.destination);o.start();o.stop(audio.currentTime+.23)}catch(e){}}
+function updateLevel(dt){if(!level||level.done||!$('#modalLayer').classList.contains('hidden'))return;const L=level,p=L.player,speed=250,oldBottom=p.y+p.h;
+p.vx=(Number(keys.right)-Number(keys.left))*speed;p.x=Math.max(0,Math.min(2790,p.x+p.vx*dt));p.vy+=1120*dt;
+if(keys.jump&&!p.jumpHeld&&p.jumps<(L.theme==='ninja'?2:1)){p.vy=L.theme==='alchemy'?-730:-680;p.ground=false;p.jumps++;playTone(L.theme==='alchemy'?420:310)}p.jumpHeld=keys.jump;p.y+=p.vy*dt;p.ground=false;
+if(p.vy>=0)for(const a of L.platforms){if(p.x+p.w>a.x&&p.x<a.x+a.w&&oldBottom<=a.y+12&&p.y+p.h>=a.y){p.y=a.y-p.h;p.vy=0;p.ground=true;p.jumps=0;}}
+p.invuln=Math.max(0,p.invuln-dt);L.step+=Math.abs(p.vx)*dt*.04;
+if(p.y>780){lose();return}
+L.orb.forEach((o,i)=>{if(!L.taken.includes(i)&&Math.hypot(p.x+15-o.x,p.y+24-o.y)<44){L.taken.push(i);playTone(750+i*140);updateLevelHud();toast('⭐ Estrela encontrada! '+L.taken.length+'/3');for(let j=0;j<16;j++)L.particles.push({x:o.x,y:o.y,vx:(Math.random()-.5)*190,vy:(Math.random()-.5)*190,life:.6})}});
+for(const m of L.monsters){m.x+=m.speed*dt;if(m.x<m.min||m.x>m.max)m.speed*=-1;if(p.invuln<=0&&Math.abs(p.x+15-m.x)<28&&p.y+p.h>m.base-28&&p.y<m.base+10){lose();return}}
+for(let i=L.particles.length-1;i>=0;i--){const q=L.particles[i];q.x+=q.vx*dt;q.y+=q.vy*dt;q.vy+=200*dt;q.life-=dt;if(q.life<=0)L.particles.splice(i,1)}
+if(p.x> L.goal-45){if(L.taken.length===3){finish();playTone(1100)}else if(!L.warned){L.warned=true;toast('🔒 Pegue as três estrelas antes de sair!')}else if(p.x<L.goal-70)L.warned=false}
+L.cam+=(Math.max(0,Math.min(2800-1280,p.x-360))-L.cam)*Math.min(1,dt*5);
+}
+function layerLand(y,color,seed,s=1){fill(color);g.beginPath();g.moveTo(0,H);g.lineTo(0,y);for(let x=0;x<=W+20;x+=25){let wave=Math.sin(x*.009+seed)*25+Math.sin(x*.025+seed)*16;g.lineTo(x,y+wave*s)}g.lineTo(W,H);g.closePath();g.fill()}
+function backdrop(theme){const im=picture('bg_'+theme);if(im){g.drawImage(im,0,0,W,H)}else{rect(0,0,W,H,'#91c7ce')}
+const tint=theme==='pirate'?'#d6fae5':theme==='alchemy'?'#ebddc9':'#f7d5dd';
+for(let i=0;i<14;i++){let x=((i*173-t*(theme==='ninja'?24:9))%1650+1650)%1650-150;let y=(i*53)%470+45;g.save();g.globalAlpha=.19;rect(x,y,13+(i%4)*12,2,tint);g.restore()}
+}
+function platformArt(p,theme){let x=p.x-level.cam,y=p.y;if(x>W+75||x+p.w<-75)return;
+g.save();g.shadowColor='#26384a88';g.shadowBlur=15;g.shadowOffsetY=9;rect(x,y,p.w,p.h,theme==='pirate'?'#785640':theme==='alchemy'?'#655e61':'#73504d');g.restore();
+let a=picture('tiles_'+theme);
+if(a){g.save();g.beginPath();g.rect(x,y,p.w,p.h);g.clip();for(let yy=0;yy<p.h;yy+=32)for(let xx=0;xx<p.w;xx+=32){const tile=(yy===0?0:(xx/32|0)%2?1:2);g.drawImage(a,tile*96,0,96,96,Math.round(x+xx),Math.round(y+yy),32,32)}g.restore();}
+else{rect(x,y,p.w,p.h,theme==='pirate'?'#a0774c':theme==='alchemy'?'#8a8b8b':'#aa6769');rect(x,y,p.w,9,'#9ccd86')}
+if(p.h>40&&theme==='pirate')for(let j=40;j<p.w;j+=112)flower(x+j,y+2,j%2?'#fce5a1':'#ec9ca9',.6);
+if(p.h>40&&theme==='alchemy')for(let j=48;j<p.w;j+=123){rect(x+j,y+16,10,10,'#7e7677');rect(x+j+3,y+19,4,4,'#a7d4c7')}
+if(p.h>40&&theme==='ninja')for(let j=39;j<p.w;j+=108){flower(x+j,y+3,'#f6aec5',.7)}
+}
+function ornatePortal(x,y,theme,open){let bob=Math.sin(t*2)*3;glow(x,y-70,82,open?'#fff8c077':'#b1e2dc44');g.save();g.shadowColor='#344d5577';g.shadowBlur=15;rr(x-30,y-108+bob,60,108,25,'#d6b98a');rr(x-23,y-100+bob,46,93,20,open?'#85d8d4':'#70878c');rr(x-14,y-91+bob,28,77,18,open?'#e6fcdd':'#4d6575');for(let i=0;i<9;i++)star(x+Math.sin(i*2+t)*16,y-84+bob+i*8,3,open?'#fff7c9':'#b6adba',t);g.restore()}
+function hero(x,y,s=1){const L=level,img=picture('hero_'+L.theme);if(img){const f=Math.abs(L.player.vx)>1?(Math.floor(L.step*2)%4):0;g.save();g.translate(x,y);g.scale(s,s);g.imageSmoothingEnabled=false;g.drawImage(img,f*96,0,96,144,-23,-70,46,70);g.restore();return}
+g.save();g.translate(x,y);rect(-13,-48,26,46,'#d98752');ellipse(0,-55,15,17,'#efc49a');g.restore()}
+function enemy(x,y,theme){const img=picture('enemy_'+theme);if(img){let f=Math.floor(t*6)%4;g.save();g.imageSmoothingEnabled=false;g.drawImage(img,f*96,0,96,96,x-25,y-48,50,50);g.restore();return}ellipse(x,y-15,17,17,'#8b7888')}
+function drawLevel(){const L=level;backdrop(L.theme);
+if(L.theme==='pirate'){for(let j=0;j<8;j++){let x=((j*350-L.cam*.3)%1900+1900)%1900-140;boat(x,490,.7);cloud(x+90,210,.45,.6)}}
+if(L.theme==='alchemy'){for(let j=0;j<11;j++){let x=((j*210-L.cam*.28)%1900+1900)%1900-100;mountain(x,529,.55,'#84958f');}}
+if(L.theme==='ninja'){for(let j=0;j<13;j++){let x=((j*180-L.cam*.24)%1900+1900)%1900-90;tree(x,548,.6+(j%3)*.16,j%2?'pine':'broad');for(let k=0;k<3;k++)rect(x+(k*37+t*10)%110-40,270+(j*23+k*35)%300,5,4,'#f4b4c0')}}
+
+g.save();g.translate(0,0);for(const p of L.platforms)platformArt(p,L.theme);
+for(let i=0;i<L.orb.length;i++){if(L.taken.includes(i))continue;let o=L.orb[i],x=o.x-L.cam;if(x<-40||x>W+40)continue;glow(x,o.y+Math.sin(t*3+i)*7,35,'#ffe7a777');star(x,o.y+Math.sin(t*3+i)*7,20,'#ffe18b',t*.3);star(x,o.y+Math.sin(t*3+i)*7,11,'#fff8d7',t*.3)}
+for(const m of L.monsters){if(m.x-L.cam>-40&&m.x-L.cam<W+40)enemy(m.x-L.cam,m.base,L.theme)}
+ornatePortal(L.goal-L.cam,565,L.theme,L.taken.length===3);
+for(const p of L.particles)star(p.x-L.cam,p.y,5,'#ffe2a1',p.life*8);
+if(L.player.invuln===0||Math.floor(t*14)%2===0)hero(L.player.x-L.cam+L.player.w/2,L.player.y+L.player.h,.92);
+g.restore();text(L.theme==='ninja'?'🍃 PULO DUPLO DISPONÍVEL':L.theme==='alchemy'?'⚗️ SALTO ALQUÍMICO':'🏴‍☠️ CAÇA AO TESOURO',W/2,88,15,'#fffaf0');
+}
+function frame(now){const dt=Math.min((now-last)/1000||0,.04);last=now;t+=dt;
+g.setTransform(DPR,0,0,DPR,0,0);g.imageSmoothingEnabled=false;g.clearRect(0,0,vw,vh);const scale=Math.max(vw/W,vh/H),ox=(vw-W*scale)/2,oy=(vh-H*scale)/2;g.translate(ox,oy);g.scale(scale,scale);
+if(scene==='map')drawMap();else{updateLevel(dt);if(level)drawLevel()}requestAnimationFrame(frame)}
+function fromPoint(e){const scale=Math.max(vw/W,vh/H);return {x:(e.clientX-(vw-W*scale)/2)/scale,y:(e.clientY-(vh-H*scale)/2)/scale}}
+c.addEventListener('click',e=>{if(scene!=='map'||!$('#modalLayer').classList.contains('hidden'))return;const p=fromPoint(e);for(let i=0;i<3;i++){const w=worlds[i];if(Math.hypot((p.x-w.x)/1.3,(p.y-w.y)/1.2)<155){choose(i);return}}});
+$('#begin').onclick=()=>{closeModal();syncButtons();toast('✨ Escolha a primeira ilha para começar!')};syncButtons();requestAnimationFrame(frame);
+})();
+</script></body></html>
